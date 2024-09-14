@@ -1,26 +1,30 @@
 import socket
 
-# Create a socket object (AF_INET = IPv4, SOCK_STREAM = TCP)
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# Function to handle incoming client connections and receive data
+def handle_client(client_socket):
+    while True:
+        try:
+            data = client_socket.recv(1024).decode()
+            if not data:
+                break  # Client disconnected
+            print(f"Received: {data}")  # Output the received drive command
+        except Exception as e:
+            print(f"Error receiving data: {e}")
+            break
 
-# Bind the socket to a specific address and port
-server_socket.bind(('localhost', 8080))
+    client_socket.close()
 
-# Start listening for connections (max 5 clients can wait)
-server_socket.listen(5)
-print('Waiting for a connection...')
+# Setup the server
+def setup_server():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind(('localhost', 9999))  # Bind to localhost and port 9999
+    server_socket.listen(1)
+    print("Server listening on port 9999...")
+    return server_socket
 
-# Accept a connection
-client_socket, addr = server_socket.accept()
-print(f"Connection from {addr}")
-
-# Receive data
-data = client_socket.recv(1024)  # Buffer size is 1024 bytes
-print(f"Received: {data.decode()}")
-
-# Send a response
-client_socket.send(b"Hello, Client!")
-
-# Close the connection
-client_socket.close()
-server_socket.close()
+if __name__ == "__main__":
+    server_socket = setup_server()
+    while True:
+        client_socket, addr = server_socket.accept()
+        print(f"Connection established with {addr}")
+        handle_client(client_socket)
