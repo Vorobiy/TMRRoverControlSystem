@@ -10,20 +10,29 @@ def setup_server_connection():
     print(f"Connected by {addr}")
     return conn
 
-# Function to handle received commands
-def handle_drive_commands(conn):
+# Function to handle received commands (both drive and arm in one packet)
+def handle_commands(conn):
     running = True
     while running:
-        # Receive data from client
+        # Receive combined data from client
         data = conn.recv(1024)
         if not data:
             break
 
-        # Decode and print the command (this is where you'd process the command)
-        drive_command = data.decode()
-        print(f"Received: {drive_command}")
+        # Decode the combined command
+        combined_command = data.decode()
+
+        # Split the drive and arm commands by checking the starting character
+        drive_command = combined_command.split('A_')[0].strip()
+        arm_command = 'A_' + combined_command.split('A_')[1].strip() if 'A_' in combined_command else ''
+
+        # Process drive and arm commands
+        if drive_command.startswith("D_"):
+            print(f"Drive Command Received: {drive_command}")
+        if arm_command.startswith("A_"):
+            print(f"Arm Command Received: {arm_command}")
 
 if __name__ == "__main__":
     conn = setup_server_connection()
-    handle_drive_commands(conn)
+    handle_commands(conn)
     conn.close()
