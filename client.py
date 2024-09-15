@@ -14,10 +14,14 @@ def setup_client_connection():
 
 # Function to send drive commands to the server
 def send_drive_commands(client_socket):
-    joystick = init_joystick()
-    running = True
+    pygame.init()
+    pygame.joystick.init()  # Initialize the joystick module
 
+    joystick = init_joystick()  # Initialize joystick
+
+    running = True
     while running:
+        # Process joystick events (without initializing video mode)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False

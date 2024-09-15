@@ -1,8 +1,5 @@
 import pygame
 
-# Initialize pygame for joystick handling
-pygame.init()
-
 # Function to map joystick axis values (-1 to 1) to PWM values (0 to 255)
 def map_axis_to_pwm(axis_value):
     # Mapping axis (-1 to 1) to PWM (0 to 255), with 128 being neutral
@@ -11,18 +8,17 @@ def map_axis_to_pwm(axis_value):
 # Function to initialize the joystick
 def init_joystick():
     pygame.joystick.init()
-    joystick_count = pygame.joystick.get_count()
-    if joystick_count == 0:
-        raise RuntimeError("No joysticks detected.")
     joystick = pygame.joystick.Joystick(0)
     joystick.init()
     return joystick
 
 # Function to get joystick values and convert to PWM for the wheels
 def get_wheel_pwm_values(joystick):
-    # Example: replace axis indices with actual mapping for your setup
-    right_wheel_axis = joystick.get_axis(0)  # Right wheel axis
-    left_wheel_axis = joystick.get_axis(1)   # Left wheel axis
+    # Left joystick vertical axis (axis 1) controls the left wheels
+    left_wheel_axis = joystick.get_axis(1)
+
+    # Right joystick vertical axis (axis 4) controls the right wheels
+    right_wheel_axis = joystick.get_axis(3)
 
     # Map axis to PWM values
     rightWheel1 = map_axis_to_pwm(right_wheel_axis)
