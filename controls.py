@@ -51,31 +51,31 @@ def get_arm_pwm_values(joystick):
     gantry_down = joystick.get_hat(0)[0] == -1 # D-Pad left
 
     # PWM Values Calculation
-    wrist_pwm_up_down = 255 if wrist_up else 0 if wrist_down else 128  # Wrist movement (up/down)
-    wrist_pwm_left_right = 255 if wrist_right else 0 if wrist_left else 128  # Wrist spin
+    wrist_left_pwm = map_axis_to_pwm(joystick.get_axis(2))  # Assuming axis 2 for wrist left
+    wrist_right_pwm = map_axis_to_pwm(joystick.get_axis(5)) # Assuming axis 5 for wrist right
 
-    # Claw control with left and right triggers
-    if claw_open and not claw_close:
-        claw_pwm = 255
-    elif claw_close and not claw_open:
-        claw_pwm = 0
+    # Determine claw spin and movement
+    if 128 <= wrist_left_pwm <= 255 and 128 <= wrist_right_pwm <= 255:
+        claw_pwm = 255  # Clockwise
+    elif 0 <= wrist_left_pwm <= 128 and 0 <= wrist_right_pwm <= 128:
+        claw_pwm = 0    # Counter-clockwise
+    elif 0 <= wrist_right_pwm <= 128 and 128 <= wrist_left_pwm <= 255:
+        claw_pwm = 255  # Move up
+    elif 128 <= wrist_right_pwm <= 255 and 0 <= wrist_left_pwm <= 128:
+        claw_pwm = 0    # Move down
     else:
-        claw_pwm = 128  # Neutral position if neither or both are pressed
+        claw_pwm = 128  # Neutral
 
     shoulder_pwm = 255 if rotate_right else 0 if rotate_left else 128  # Shoulder rotation
 
     elbow_pwm = 255 if elbow_up else 0 if elbow_down else 128  # Elbow up/down
     gantry_pwm = 255 if gantry_up else 0 if gantry_down else 128  # Gantry up/down
 
-    # Wrist up/down and spin values
-    wrist_up_down = wrist_pwm_up_down
-    wrist_spin = wrist_pwm_left_right
-
     # Ensure values are clamped between 0 and 255
     return [
         max(0, min(255, elbow_pwm)),
-        max(0, min(255, wrist_up_down)),  # Wrist movement (up/down)
-        max(0, min(255, wrist_spin)),     # Wrist spin
+        max(0, min(255, wrist_left_pwm)),  # Wrist movement (up/down)
+        max(0, min(255, wrist_right_pwm)), # Wrist spin
         max(0, min(255, claw_pwm)),
         max(0, min(255, gantry_pwm)),
         max(0, min(255, shoulder_pwm))
