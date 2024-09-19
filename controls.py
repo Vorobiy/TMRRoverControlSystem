@@ -16,7 +16,6 @@ def init_joystick():
     return joystick
 
 def get_wheel_pwm_values(joystick):
-    """Get PWM values for rover wheels based on joystick input."""
     left_wheel_axis = joystick.get_axis(1)
     right_wheel_axis = joystick.get_axis(3)
     right_wheel_pwms = [map_axis_to_pwm(right_wheel_axis)] * 3
@@ -24,7 +23,6 @@ def get_wheel_pwm_values(joystick):
     return right_wheel_pwms + left_wheel_pwms
 
 def get_arm_pwm_values(joystick):
-    """Get PWM values for arm components based on joystick input."""
     wrist_up = joystick.get_button(2)    # X button for wrist up
     wrist_down = joystick.get_button(1)  # B button for wrist down
     wrist_max = joystick.get_button(0)   # A button for max PWM on both wrists
@@ -49,16 +47,16 @@ def get_arm_pwm_values(joystick):
     else:
         claw_pwm = 128
 
-    if wrist_up:  # X button pressed for wrist up
+    if wrist_up:  
         wrist_left_pwm = 255
         wrist_right_pwm = 0
-    elif wrist_down:  # B button pressed for wrist down
+    elif wrist_down:
         wrist_left_pwm = 0
         wrist_right_pwm = 255
-    elif wrist_max:  # A button pressed for max PWM (128-255)
+    elif wrist_max:
         wrist_left_pwm = 255
         wrist_right_pwm = 255
-    elif wrist_min:  # Y button pressed for min PWM (0-128)
+    elif wrist_min:
         wrist_left_pwm = 0
         wrist_right_pwm = 0
 
