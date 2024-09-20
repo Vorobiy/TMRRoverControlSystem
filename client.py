@@ -13,6 +13,10 @@ def setup_client_connection():
         print(f"Error connecting to server: {e}")
         return None
 
+def has_input_changed(prev_state, current_state):
+    """Check if the input state has changed."""
+    return prev_state != current_state
+
 def send_commands(client_socket):
     """Send commands to the server based on joystick input."""
     pygame.init()
@@ -22,6 +26,11 @@ def send_commands(client_socket):
 
     clock = pygame.time.Clock()
     running = True
+
+    # Store previous states for comparison
+    prev_wheel_pwms = None
+    prev_arm_pwms = None
+
     while running:
         pygame.event.pump()  # Process internal pygame events
 
@@ -29,25 +38,36 @@ def send_commands(client_socket):
         wheel_pwms = get_wheel_pwm_values(joystick)
         arm_pwms = get_arm_pwm_values(joystick)
 
-        # Construct drive and arm commands separately
-        drive_command = construct_drive_packet(wheel_pwms)
-        arm_command = construct_arm_packet(arm_pwms)
+        # Only send data if there has been a change in input
+        if has_input_changed(prev_wheel_pwms, wheel_pwms):
+            # Construct drive command
+            drive_command = construct_drive_packet(wheel_pwms)
 
-        # Send the drive command first
-        try:
-            client_socket.sendall(drive_command.encode())
-            print(f"{drive_command}")
-        except Exception as e:
-            print(f"Failed to send drive command: {e}")
-            break  # Stop if we can't send data
+            # Send the drive command
+            try:
+                client_socket.sendall(drive_command.encode())
+                print(f"Sent drive command: {drive_command}")
+            except Exception as e:
+                print(f"Failed to send drive command: {e}")
+                break  # Stop if we can't send data
 
-        # Send the arm command separately
-        try:
-            client_socket.sendall(arm_command.encode())
-            print(f"{arm_command}")
-        except Exception as e:
-            print(f"Failed to send arm command: {e}")
-            break  # Stop if we can't send data
+            # Update the previous state for wheels
+            prev_wheel_pwms = wheel_pwms
+
+        if has_input_changed(prev_arm_pwms, arm_pwms):
+            # Construct arm command
+            arm_command = construct_arm_packet(arm_pwms)
+
+            # Send the arm command
+            try:
+                client_socket.sendall(arm_command.encode())
+                print(f"Sent arm command: {arm_command}")
+            except Exception as e:
+                print(f"Failed to send arm command: {e}")
+                break  # Stop if we can't send data
+
+            # Update the previous state for arms
+            prev_arm_pwms = arm_pwms
 
         # Event handling for quitting
         for event in pygame.event.get():
@@ -55,7 +75,7 @@ def send_commands(client_socket):
                 running = False
 
         # Control the rate of sending commands (10 times per second)
-        clock.tick(5)
+        clock.tick(10)
 
     pygame.quit()
     client_socket.close()
