@@ -1,7 +1,7 @@
 import pygame
 
 def map_axis_to_pwm(axis_value):
-    """Map joystick axis value to PWM range."""
+    """Map joystick axis value to PWM range (0-255)."""
     pwm_value = int((axis_value + 1) * 127.5)
     return max(0, min(255, pwm_value))
 
@@ -16,13 +16,17 @@ def init_joystick():
     return joystick
 
 def get_wheel_pwm_values(joystick):
-    left_wheel_axis = joystick.get_axis(1)
-    right_wheel_axis = joystick.get_axis(3)
-    right_wheel_pwms = [map_axis_to_pwm(right_wheel_axis)] * 3
-    left_wheel_pwms = [map_axis_to_pwm(left_wheel_axis)] * 3
-    return right_wheel_pwms + left_wheel_pwms
+    """Get PWM values for the wheels based on joystick axes."""
+    left_wheel_axis = joystick.get_axis(1)  # Assuming axis 1 for left wheel
+    right_wheel_axis = joystick.get_axis(3)  # Assuming axis 3 for right wheel
+
+    left_wheel_pwm = map_axis_to_pwm(left_wheel_axis)
+    right_wheel_pwm = map_axis_to_pwm(right_wheel_axis)
+
+    return [right_wheel_pwm, right_wheel_pwm, right_wheel_pwm, left_wheel_pwm, left_wheel_pwm, left_wheel_pwm]
 
 def get_arm_pwm_values(joystick):
+    """Get PWM values for the arm based on joystick buttons and D-Pad."""
     wrist_up = joystick.get_button(2)    # X button for wrist up
     wrist_down = joystick.get_button(1)  # B button for wrist down
     wrist_max = joystick.get_button(0)   # A button for max PWM on both wrists
@@ -36,18 +40,19 @@ def get_arm_pwm_values(joystick):
     gantry_up = joystick.get_hat(0)[0] == 1   # D-Pad right
     gantry_down = joystick.get_hat(0)[0] == -1 # D-Pad left
 
-    wrist_left_pwm = 128 
+    # Initialize PWMs at neutral position
+    wrist_left_pwm = 128
     wrist_right_pwm = 128
     claw_pwm = 128
 
+    # Claw control
     if claw_open_axis > 0:  # Left trigger partially/fully pressed
         claw_pwm = int((claw_open_axis + 1) * 127.5)
     elif claw_close_axis > 0:  # Right trigger partially/fully pressed
         claw_pwm = int(255 - ((claw_close_axis + 1) * 127.5))
-    else:
-        claw_pwm = 128
 
-    if wrist_up:  
+    # Wrist control
+    if wrist_up:
         wrist_left_pwm = 255
         wrist_right_pwm = 0
     elif wrist_down:
@@ -60,25 +65,24 @@ def get_arm_pwm_values(joystick):
         wrist_left_pwm = 0
         wrist_right_pwm = 0
 
+    # Shoulder, elbow, and gantry control
     shoulder_pwm = 255 if rotate_right else 0 if rotate_left else 128
     elbow_pwm = 255 if elbow_up else 0 if elbow_down else 128
     gantry_pwm = 255 if gantry_up else 0 if gantry_down else 128
 
     return [
-        max(0, min(255, elbow_pwm)),
-        max(0, min(255, wrist_right_pwm)),
-        max(0, min(255, wrist_left_pwm)),
-        max(0, min(255, claw_pwm)),
-        max(0, min(255, gantry_pwm)),
-        max(0, min(255, shoulder_pwm))
+        elbow_pwm,
+        wrist_right_pwm,
+        wrist_left_pwm,
+        claw_pwm,
+        gantry_pwm,
+        shoulder_pwm
     ]
 
 def construct_drive_packet(wheel_pwms):
-    """Construct drive command packet."""
-    packet = f"D_{'_'.join(map(str, wheel_pwms))}"
-    return packet
+    """Construct the drive command packet."""
+    return f"D_{'_'.join(map(str, wheel_pwms))}"
 
 def construct_arm_packet(arm_pwms):
-    """Construct arm command packet."""
-    packet = f"A_{'_'.join(map(str, arm_pwms))}"
-    return packet
+    """Construct the arm command packet."""
+    return f"A_{'_'.join(map(str, arm_pwms))}"
