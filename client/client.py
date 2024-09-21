@@ -1,6 +1,6 @@
 import pygame
 import socket
-from controls import init_joystick, get_wheel_pwm_values, get_arm_pwm_values, construct_drive_packet, construct_arm_packet
+from client.controls import init_joystick, get_wheel_pwm_values, get_arm_pwm_values, construct_drive_packet, construct_arm_packet
 
 def setup_client_connection():
     """Setup socket connection to the server."""
