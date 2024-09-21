@@ -1,9 +1,28 @@
 import pygame
 
+# Initial PWM sensitivity range, adjustable with buttons 6 and 7
+pwm_sensitivity = 128  # Neutral position is 128
+pwm_range_offset = 127  # Maximum offset from 128 is 127 (i.e., 255 or 0 at extremes)
+
 def map_axis_to_pwm(axis_value):
-    """Map joystick axis value to PWM range (0-255)."""
-    pwm_value = int((axis_value + 1) * 127.5)
-    return max(0, min(255, pwm_value))
+    """Map joystick axis value to PWM range around 128."""
+    global pwm_range_offset
+    pwm_value = int(128 + (axis_value * pwm_range_offset))
+    return max(128 - pwm_range_offset, min(128 + pwm_range_offset, pwm_value))
+
+def adjust_pwm_range(joystick):
+    """Adjust PWM sensitivity range based on button presses (button 6 decreases, button 7 increases)."""
+    global pwm_range_offset
+    decrease_sensitivity = joystick.get_button(6)  # Button 6 to decrease sensitivity
+    increase_sensitivity = joystick.get_button(7)  # Button 7 to increase sensitivity
+
+    if decrease_sensitivity:
+        pwm_range_offset = max(20, pwm_range_offset - 20)  # Don't go below 20 from neutral (108-148 range)
+        print(f"Sensitivity decreased: PWM range offset is now {pwm_range_offset}")
+
+    if increase_sensitivity:
+        pwm_range_offset = min(127, pwm_range_offset + 20)  # Don't go above 127 (0-255 range)
+        print(f"Sensitivity increased: PWM range offset is now {pwm_range_offset}")
 
 def init_joystick():
     """Initialize the joystick and return the joystick object."""
@@ -17,6 +36,8 @@ def init_joystick():
 
 def get_wheel_pwm_values(joystick):
     """Get PWM values for the wheels based on joystick axes."""
+    adjust_pwm_range(joystick)  # Adjust the sensitivity when button 6 or 7 is pressed
+
     left_wheel_axis = joystick.get_axis(1)  # Assuming axis 1 for left wheel
     right_wheel_axis = joystick.get_axis(3)  # Assuming axis 3 for right wheel
 
@@ -27,6 +48,8 @@ def get_wheel_pwm_values(joystick):
 
 def get_arm_pwm_values(joystick):
     """Get PWM values for the arm based on joystick buttons and D-Pad."""
+    adjust_pwm_range(joystick)  # Adjust the sensitivity when button 6 or 7 is pressed
+
     wrist_up = joystick.get_button(2)    # X button for wrist up
     wrist_down = joystick.get_button(1)  # B button for wrist down
     wrist_max = joystick.get_button(0)   # A button for max PWM on both wrists
@@ -40,35 +63,35 @@ def get_arm_pwm_values(joystick):
     gantry_up = joystick.get_hat(0)[0] == 1   # D-Pad right
     gantry_down = joystick.get_hat(0)[0] == -1 # D-Pad left
 
-    # Initialize PWMs at neutral position
+    # Initialize PWMs at neutral position (128)
     wrist_left_pwm = 128
     wrist_right_pwm = 128
     claw_pwm = 128
 
     # Claw control
     if claw_open_axis > 0:  # Left trigger partially/fully pressed
-        claw_pwm = int((claw_open_axis + 1) * 127.5)
+        claw_pwm = int(128 + (claw_open_axis * pwm_range_offset))
     elif claw_close_axis > 0:  # Right trigger partially/fully pressed
-        claw_pwm = int(255 - ((claw_close_axis + 1) * 127.5))
+        claw_pwm = int(128 - (claw_close_axis * pwm_range_offset))
 
     # Wrist control
     if wrist_up:
-        wrist_left_pwm = 255
-        wrist_right_pwm = 0
+        wrist_left_pwm = 128 + pwm_range_offset
+        wrist_right_pwm = 128 - pwm_range_offset
     elif wrist_down:
-        wrist_left_pwm = 0
-        wrist_right_pwm = 255
+        wrist_left_pwm = 128 - pwm_range_offset
+        wrist_right_pwm = 128 + pwm_range_offset
     elif wrist_max:
-        wrist_left_pwm = 255
-        wrist_right_pwm = 255
+        wrist_left_pwm = 128 + pwm_range_offset
+        wrist_right_pwm = 128 + pwm_range_offset
     elif wrist_min:
-        wrist_left_pwm = 0
-        wrist_right_pwm = 0
+        wrist_left_pwm = 128 - pwm_range_offset
+        wrist_right_pwm = 128 - pwm_range_offset
 
     # Shoulder, elbow, and gantry control
-    shoulder_pwm = 255 if rotate_right else 0 if rotate_left else 128
-    elbow_pwm = 255 if elbow_up else 0 if elbow_down else 128
-    gantry_pwm = 255 if gantry_up else 0 if gantry_down else 128
+    shoulder_pwm = 128 + pwm_range_offset if rotate_right else 128 - pwm_range_offset if rotate_left else 128
+    elbow_pwm = 128 + pwm_range_offset if elbow_up else 128 - pwm_range_offset if elbow_down else 128
+    gantry_pwm = 128 + pwm_range_offset if gantry_up else 128 - pwm_range_offset if gantry_down else 128
 
     return [
         elbow_pwm,

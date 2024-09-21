@@ -32,7 +32,7 @@ def send_commands(client_socket):
     prev_arm_pwms = None
 
     while running:
-        pygame.event.pump()  # Process internal pygame events
+        pygame.event.pump()  # event handler for pygame
 
         # Get PWM values for wheels and arms from joystick
         wheel_pwms = get_wheel_pwm_values(joystick)
