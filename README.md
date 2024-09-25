@@ -12,10 +12,32 @@ This project is a control system for the 2023 rover, which uses a video game con
 To run this project, you will need the following Python libraries:
 
 - `pygame`: For joystick input
-- `socket`: For client-server communication
+- `websockets`: For client-server communication
+- `npm`: For package manager
+- `Node.js`: For package Managing
 
 You can install the required dependencies using the following command:
 
 ```bash
 pip install pygame
+```
+## Steps to Launch:
+**Step 1**: Clone Git Repo:
+```bash
+git clone https://github.com/yourusername/rover-control-system.git
+```
+**Step 2**: Run server:
+```bash
+py server.py
+```
+**Step 3**: Open new terminal + Run client server:
+```bash
+cd client
+py client.py
+```
+**Step 4**: Open new terminal + Run Web App:
+```bash
+cd client
+cd rover-ui
+npm run dev
 ```
