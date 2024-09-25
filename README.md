@@ -30,11 +30,12 @@ git clone https://github.com/yourusername/rover-control-system.git
 ```bash
 py server.py
 ```
-**Step 3**: Open new terminal + Run client server:
+**Step 3**: Open new terminal + Run client server (MAKE SURE YOUR CONTROLLER IS CONNECTED TO THE PC AT THIS POINT):
 ```bash
 cd client
 py client.py
 ```
+
 **Step 4**: Open new terminal + Run Web App:
 ```bash
 cd client
