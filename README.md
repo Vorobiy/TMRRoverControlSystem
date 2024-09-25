@@ -24,7 +24,7 @@ pip install pygame
 ## Steps to Launch:
 **Step 1**: Clone Git Repo:
 ```bash
-git clone https://github.com/yourusername/rover-control-system.git
+git clone https://github.com/vorobiy/TMRRoverControlSystem.git
 ```
 **Step 2**: Run server:
 ```bash
