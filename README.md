@@ -21,24 +21,41 @@ You can install the required dependencies using the following command:
 ```bash
 pip install pygame
 ```
-## Steps to Launch:
+## Steps to Launch controls only:
 **Step 1**: Clone Git Repo:
 ```bash
 git clone https://github.com/vorobiy/TMRRoverControlSystem.git
 ```
 **Step 2**: Run server:
 ```bash
+cd assignmentControls
 py server.py
 ```
-**Step 3**: Open new terminal + Run client server (MAKE SURE YOUR CONTROLLER IS CONNECTED TO THE PC AT THIS POINT):
+**Step 3**: Run client in new terminal:
 ```bash
-cd client
+cd assignmentControls
 py client.py
 ```
 
-**Step 4**: Open new terminal + Run Web App:
+## Steps to Launch part A:
+**Step 1**: Launch server:
 ```bash
-cd client
+cd part_A
+py server.py
+```
+**Step 2**: Run client in new terminal:
+```bash
+cd part_A
+py client.py
+```
+
+**Step 3**: Run React + Vite in new terminal:
+```bash
+cd part_A
 cd rover-ui
 npm run dev
 ```
+
+
+
+
