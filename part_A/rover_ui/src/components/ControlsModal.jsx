@@ -10,18 +10,33 @@ const ControlsModal = ({ isOpen, onClose }) => {
         <div className="controls-diagram">
           <div className="joystick-diagram">
             <div className="buttons">
-              <p>Buttons 1-4: Arm movements.</p>
+              <h3>Button Mappings</h3>
+              <p><strong>Button 0 (A)</strong>: Max PWM on both wrists</p>
+              <p><strong>Button 1 (B)</strong>: Wrist down</p>
+              <p><strong>Button 2 (X)</strong>: Wrist up</p>
+              <p><strong>Button 3 (Y)</strong>: Min PWM on both wrists</p>
+              <p><strong>Button 4 (Left Shoulder)</strong>: Rotate left</p>
+              <p><strong>Button 5 (Right Shoulder)</strong>: Rotate right</p>
             </div>
+
             <div className="axes">
-              <p>Left Joystick (Y-axis): Left wheels.</p>
-              <p>Right Joystick (Y-axis): Right wheels.</p>
+              <h3>Joystick Axes</h3>
+              <p><strong>Left Joystick (Y-axis)</strong>: Left wheels</p>
+              <p><strong>Right Joystick (Y-axis)</strong>: Right wheels</p>
             </div>
+
             <div className="triggers">
-              <p>Left Trigger: Open claw.</p>
-              <p>Right Trigger: Close claw.</p>
+              <h3>Triggers</h3>
+              <p><strong>Left Trigger (Axis 4)</strong>: Open claw</p>
+              <p><strong>Right Trigger (Axis 5)</strong>: Close claw</p>
             </div>
+
             <div className="dpad">
-              <p>D-Pad: Gantry and elbow control.</p>
+              <h3>D-Pad Controls</h3>
+              <p><strong>D-Pad Up</strong>: Elbow up</p>
+              <p><strong>D-Pad Down</strong>: Elbow down</p>
+              <p><strong>D-Pad Right</strong>: Gantry up</p>
+              <p><strong>D-Pad Left</strong>: Gantry down</p>
             </div>
           </div>
         </div>
