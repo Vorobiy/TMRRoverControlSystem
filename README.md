@@ -1,7 +1,7 @@
 # Rover Control System
 
 # NOTE: If none of this code works for you, please navigate to my video where I show a demo of how the code worked for me. 
-[![Youtube video](https://img.youtube.com/vi/wdzD0cnPrlw/0.jpg)](https://www.youtube.com/watch?v=wdzD0cnPrlw)
+[![Youtube video](./redundant/TMR_URC_2024_3.jfif)](https://www.youtube.com/watch?v=wdzD0cnPrlw)
 This project is a control system for the 2023 rover, which uses a video game controller to control the rover's 12 motors (6 for driving and 6 for arm control). The system sends drive and arm command packets from the client to the server using Python's socket library.
 
 ## Features
