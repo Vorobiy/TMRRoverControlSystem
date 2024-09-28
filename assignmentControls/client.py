@@ -1,9 +1,8 @@
-import asyncio
-import websockets
+import socket
 import pygame
 from controls import init_joystick, get_wheel_pwm_values, get_arm_pwm_values, construct_drive_packet, construct_arm_packet
 
-async def send_commands(websocket):
+def send_commands():
     """Send commands to the server based on joystick input."""
     pygame.init()
     pygame.joystick.init()
@@ -12,31 +11,39 @@ async def send_commands(websocket):
     current_drive_command = None
     current_arm_command = None
 
-    while True:
-        pygame.event.pump()  # event handler for pygame
+    # Connect to the TCP server
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.connect(('localhost', 8000))
 
-        # Get PWM values for wheels and arms from joystick
-        wheel_pwms = get_wheel_pwm_values(joystick)
-        arm_pwms = get_arm_pwm_values(joystick)
+    try:
+        while True:
+            pygame.event.pump()  # Event handler for pygame
 
-        # Construct commands
-        new_drive_command = construct_drive_packet(wheel_pwms)
-        new_arm_command = construct_arm_packet(arm_pwms)
+            # Get PWM values for wheels and arms from joystick
+            wheel_pwms = get_wheel_pwm_values(joystick)
+            arm_pwms = get_arm_pwm_values(joystick)
 
-        # Update commands only if there's a change
-        if new_drive_command != current_drive_command:
-            current_drive_command = new_drive_command
-            await websocket.send(current_drive_command)
+            # Construct commands
+            new_drive_command = construct_drive_packet(wheel_pwms)
+            new_arm_command = construct_arm_packet(arm_pwms)
 
-        if new_arm_command != current_arm_command:
-            current_arm_command = new_arm_command
-            await websocket.send(current_arm_command)
+            # Update commands only if there's a change
+            if new_drive_command != current_drive_command:
+                current_drive_command = new_drive_command
+                # Add newline to mark the end of the packet
+                server_socket.send((current_drive_command + "\n").encode())
 
-        await asyncio.sleep(0.1)  # Throttle to reduce spam
+            if new_arm_command != current_arm_command:
+                current_arm_command = new_arm_command
+                # Add newline to mark the end of the packet
+                server_socket.send((current_arm_command + "\n").encode())
 
-async def main():
-    async with websockets.connect('ws://localhost:8000') as websocket:
-        await send_commands(websocket)
+            pygame.time.wait(100)  # Wait for 100ms before sending again
+
+    except KeyboardInterrupt:
+        print("Client disconnected")
+    finally:
+        server_socket.close()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    send_commands()

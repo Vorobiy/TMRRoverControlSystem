@@ -1,11 +1,14 @@
-import React from 'react';
-import './App.css'; // Ensure this line is present
+import React, { useState } from 'react';
+import './App.css';
 import useWebSocket from './hooks/useWebSocket';
 import PacketList from './components/PacketList';
-import ConnectionStatus from './components/ConnectionStatus'; // Import your ConnectionStatus component
+import ConnectionStatus from './components/ConnectionStatus';
+import RoverStatus from './components/RoverStatus';
+import ControlsModal from './components/ControlsModal'; // Import the modal component
 
 function App() {
   const { driveCommand, armCommand } = useWebSocket('ws://localhost:8000');
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
 
   return (
     <div className="App">
@@ -15,16 +18,20 @@ function App() {
         </div>
         <nav className="nav-links">
           <a href="#home">Home</a>
-          <a href="#controls">Controls</a>
+          <a href="#controls" onClick={() => setIsModalOpen(true)}>Controls</a> {/* Trigger modal */}
         </nav>
       </header>
       <div className="box">
         <h1>Rover Control System</h1>
         <PacketList driveCommand={driveCommand} armCommand={armCommand} />
         
-        {/* Add the ConnectionStatus component here */}
         <ConnectionStatus />
+
+        <RoverStatus />
       </div>
+
+      {/* Controls Modal */}
+      <ControlsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }

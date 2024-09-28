@@ -23,9 +23,9 @@ body {
   background-color: black;
   color: white;
   width: 100%;
-  position: fixed; 
-  top: 0; 
-  left: 0; 
+  position: fixed;
+  top: 0;
+  left: 0;
   z-index: 1000;
 }
 
@@ -59,7 +59,7 @@ body {
   top: 60px;
 }
 
-.connection-status {
+.connection-status, .rover-status {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -76,6 +76,7 @@ body {
   margin-bottom: 10px;
   color: #fff;
   font-size: 18px;
+  gap: 10px;
 }
 
 .status-indicator {
@@ -86,11 +87,11 @@ body {
   transition: background-color 0.3s;
 }
 
-.connected {
+.status-indicator.connected {
   background-color: green;
 }
 
-.disconnected {
+.status-indicator.disconnected {
   background-color: red;
 }
 
@@ -105,4 +106,54 @@ body {
   text-align: center;
   font-size: 2rem;
   margin-bottom: 20px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: black;
+  padding: 20px;
+  border-radius: 8px;
+  width: 50%;
+  max-width: 600px;
+  text-align: center;
+  position: relative;
+}
+
+.controls-diagram {
+  margin-top: 20px;
+}
+
+.joystick-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.buttons, .axes, .triggers, .dpad {
+  margin-bottom: 20px;
+}
+
+.close-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.close-btn:hover {
+  background-color: #45a049;
 }

@@ -36,6 +36,7 @@ py server.py
 cd assignmentControls
 py client.py
 ```
+If you now go back to the server.py folder, you'll see the packet output and if you stay at client.py you'll see the increase and decrease in speed if you press the two small buttons underneath the xbox controller.
 
 ## Steps to Launch part A:
 **Step 1**: Launch server:
@@ -45,14 +46,13 @@ py server.py
 ```
 **Step 2**: Run client in new terminal:
 ```bash
-cd part_A
+cd part_A/rover_ui
 py client.py
 ```
 
 **Step 3**: Run React + Vite in new terminal:
 ```bash
-cd part_A
-cd rover-ui
+cd part_A/rover_ui
 npm run dev
 ```
 
